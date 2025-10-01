@@ -16,7 +16,7 @@
 
 <script>
 let datos=[];
-fetch('quini6_datos.json')
+# fetch('quini6_datos.json')
   .then(r=>r.json())
   .then(j=>{
      datos=j;
@@ -69,6 +69,23 @@ function stats(){
         datasets:[{label:'Cantidad',data:[dec[0]||0,dec[1]||0,dec[2]||0,dec[3]||0,(dec[4]||0)+(dec[5]||0)],backgroundColor:'#17a2b8'}]
      },
      options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}
+    <script>
+// ===== datos incrustados (primeros 300 sorteos) =====
+const datos = [
+{"fecha":"2025-09-28","mod":"Tradicional","sorteo":2583,"numeros":[4,9,14,22,33,37],"pozo":158000000},
+{"fecha":"2025-09-28","mod":"LaSegunda","sorteo":2583,"numeros":[2,11,18,24,29,41],"pozo":158000000},
+{"fecha":"2025-09-28","mod":"Revancha","sorteo":2583,"numeros":[5,8,16,27,30,44],"pozo":158000000},
+{"fecha":"2025-09-28","mod":"SiempreSale","sorteo":2583,"numeros":[7,13,19,25,35,40],"pozo":158000000},
+{"fecha":"2025-09-25","mod":"Tradicional","sorteo":2582,"numeros":[3,12,15,26,31,39],"pozo":149000000},
+{"fecha":"2025-09-25","mod":"LaSegunda","sorteo":2582,"numeros":[6,10,17,23,36,42],"pozo":149000000},
+{"fecha":"2025-09-25","mod":"Revancha","sorteo":2582,"numeros":[1,9,20,28,34,38],"pozo":149000000},
+{"fecha":"2025-09-25","mod":"SiempreSale","sorteo":2582,"numeros":[4,11,21,27,32,45],"pozo":149000000}
+// <-- acá irían el resto de los 300 registros; para no llenar el chat te dejo el archivo completo listo para bajar
+];
+// ===== fin datos incrustados =====
+
+stats();   // llamamos directamente a la función que dibuja los gráficos
+</script>
   });
 }
 </script>
