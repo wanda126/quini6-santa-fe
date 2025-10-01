@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Carga Quini6 – Paso 1</title>
+<style>
+body{font-family:Arial,Helvetica,sans-serif;margin:30px;background:#f7f7f7}
+h2{color:#004e92}
+label{display:inline-block;width:110px;margin:4px 0}
+input[type=number]{width:50px}
+button{padding:8px 18px;background:#004e92;color:#fff;border:none;cursor:pointer}
+button:hover{background:#0066c0}
+#msg{margin-top:15px;font-weight:bold}
+</style>
+</head>
+<body>
+<h2>Carga de sorteos Quini6 – Santa Fe</h2>
+
+<label>Fecha:</label>
+<input type="date" id="fecha" required><br>
+
+<label>Modalidad:</label>
+<select id="mod">
+  <option value="Tradicional">Tradicional</option>
+  <option value="LaSegunda">La Segunda</option>
+  <option value="Revancha">Revancha</option>
+  <option value="SiempreSale">Siempre Sale</option>
+</select><br>
+
+<label>Nº Sorteo:</label>
+<input type="number" id="nro" min="1" placeholder="ej 4523"><br>
+
+<label>Números (6 bolillas 0-45):</label><br>
+<input type="number" id="n1" min="0" max="45" required>
+<input type="number" id="n2" min="0" max="45" required>
+<input type="number" id="n3" min="0" max="45" required>
+<input type="number" id="n4" min="0" max="45" required>
+<input type="number" id="n5" min="0" max="45" required>
+<input type="number" id="n6" min="0" max="45" required><br>
+
+<label>Pozo ($):</label>
+<input type="number" id="pozo" min="0" placeholder="0"><br>
+
+<button onclick="guardar()">Guardar sorteo</button>
+<div id="msg"></div>
+
+<script>
+let datos = [];
+try{
+  const prev = localStorage.getItem("quini6_data");
+  if(prev) datos = JSON.parse(prev);
+}catch(e){}
+
+function guardar(){
+  const f = document.getElementById('fecha').value;
+  const m = document.getElementById('mod').value;
+  const n = document.getElementById('nro').value;
+  const nums = [1,2,3,4,5,6].map(i=>Number(document.getElementById('n'+i).value));
+  const p = Number(document.getElementById('pozo').value);
+
+  if(!f||!m||!n||nums.some(x=>x<0||x>45||isNaN(x))){alert("Completa todos los campos (0-45).");return;}
+
+  nums.sort((a,b)=>a-b);
+  datos.push({fecha:f,modalidad:m,sorteo:n,numeros:nums,pozo:p});
+  localStorage.setItem("quini6_data",JSON.stringify(datos));
+
+  // backup físico
+  const blob = new Blob([JSON.stringify(datos,null,2)],{type:"application/json"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="quini6_data.json";
+  a.click();
+
+  document.getElementById('msg').textContent="Sorteo guardado. Total cargados: "+datos.length;
+  ['n1','n2','n3','n4','n5','n6'].forEach(id=>document.getElementById(id).value='');
+}
+</script>
+</body>
+</html>
