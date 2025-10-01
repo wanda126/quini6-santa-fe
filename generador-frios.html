@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Generador 6 boletas – Estrategia fríos</title>
+<link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+<h2>Generador 6 boletas (≥3 fríos, sin repetir)</h2>
+<label>Modalidad:</label>
+<select id="mod">
+  <option value="Tradicional">Tradicional</option>
+  <option value="LaSegunda">La Segunda</option>
+  <option value="Revancha">Revancha</option>
+  <option value="SiempreSale">Siempre Sale</option>
+</select><br>
+<label>Pozo actual ($ millones):</label>
+<input type="number" id="pozo" min="0" value="210"><br>
+<button onclick="generar6()">Generar 6 boletas</button>
+<ul id="lista"></ul>
+
+<script>
+const datos = [ /* mismo JSON que arriba, corto por brevedad */ ];
+let frios = [];
+
+function calcularFrios(){
+  const atraso = {};
+  for(let n=0;n<=45;n++)atraso[n]=0;
+  datos.forEach(s=>{
+     s.numeros.forEach(n=>atraso[n]=0);
+     for(let k=0;k<=45;k++)if(!s.numeros.includes(k))atraso[k]++;
+  });
+  frios = [];
+  for(let n=0;n<=45;n++)if(atraso[n]>30)frios.push(n);
+}
+
+function generar6(){
+  const pozo = Number(document.getElementById('pozo').value);
+  if(pozo < 200){alert('Pozo debe ser ≥ 200 M para aplicar la estrategia.');return;}
+
+  calcularFrios();
+  const usados = new Set();          // boletas ya emitidas
+  const lista = document.getElementById('lista'); lista.innerHTML='';
+
+  for(let b=0;b<6;b++){
+     let boleta=[];
+     while(boleta.length<6){
+        // 50 % probabilidad de sacar frío, 50 % cualquiera
+        let n = Math.random()<0.5 && frios.length>0
+                ? frios[Math.floor(Math.random()*frios.length)]
+                : Math.floor(Math.random()*46);
+        if(!boleta.includes(n)) boleta.push(n);
+        // garantizamos al menos 3 fríos
+        if(boleta.length===6 && boleta.filter(x=>frios.includes(x)).length<3){
+           boleta=[]; continue;
+        }
+     }
+     boleta.sort((a,b)=>a-b);
+     const txt = 'Boleta '+(b+1)+': '+boleta.join(' - ')+'  (fríos: '+boleta.filter(x=>frios.includes(x)).length+')';
+     const li=document.createElement('li'); li.textContent=txt; lista.appendChild(li);
+  }
+}
+</script>
+</body>
+</html>
