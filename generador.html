@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Generador de jugadas Quini6</title>
+<link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+<h2>Generador estadístico de combinaciones</h2>
+<label>Cantidad de jugadas (1-20):</label>
+<input type="number" id="n" min="1" max="20" value="5">
+<button onclick="generar()">Generar</button>
+<ul id="lista"></ul>
+
+<script>
+let datos=[];
+fetch('quini6_datos.json')
+  .then(r=>r.json())
+  .then(j=>{datos=j;});
+
+function generar(){
+  // peso = 1 / (frecuencia+1)  -> favorece los "fríos"
+  const peso={},freq={};
+  for(let n=0;n<=45;n++)freq[n]=0;
+  datos.forEach(s=>s.numeros.forEach(n=>freq[n]++));
+  for(let n=0;n<=45;n++) peso[n]=1/(freq[n]+1);
+
+  const cant=Number(document.getElementById('n').value);
+  const lista=document.getElementById('lista'); lista.innerHTML='';
+  for(let k=0;k<cant;k++){
+     const comb=[];
+     while(comb.length<6){
+        // ruleta ponderada
+        let tot=0,r=Math.random();
+        for(let n=0;n<=45;n++) tot+=peso[n];
+        let acum=0,selec=-1;
+        for(let n=0;n<=45;n++){
+           acum+=peso[n]/tot;
+           if(r<=acum){selec=n;break;}
+        }
+        if(!comb.includes(selec)) comb.push(selec);
+     }
+     comb.sort((a,b)=>a-b);
+     const li=document.createElement('li');
+     li.textContent=comb.join(' - ');
+     lista.appendChild(li);
+  }
+}
+</script>
+</body>
+</html>
