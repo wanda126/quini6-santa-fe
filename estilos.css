@@ -1,0 +1,6 @@
+body{font-family:Arial,Helvetica,sans-serif;margin:30px;background:#f7f7f7;color:#333}
+h1,h2{color:#004e92}
+button{padding:8px 18px;background:#004e92;color:#fff;border:none;cursor:pointer;margin:4px}
+button:hover{background:#0066c0}
+input[type=number],input[type=date],select{padding:4px;margin:2px}
+#lista{line-height:1.8}
