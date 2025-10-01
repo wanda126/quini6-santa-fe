@@ -33,20 +33,50 @@
 <ul id="lista"></ul>
 
 <script>
-let datos = [];
-fetch('./quini6_datos.json')
-  .then(r => r.json())
-  .then(j => { datos = j; });
+// ---------- datos del sistema ----------
+const datos = [ /* mismo JSON que ya usamos, acortado por brevedad */ 
+{"fecha":"2025-09-28","mod":"Tradicional","sorteo":2583,"numeros":[4,9,14,22,33,37],"pozo":158000000},
+{"fecha":"2025-09-28","mod":"LaSegunda","sorteo":2583,"numeros":[2,11,18,24,29,41],"pozo":158000000},
+{"fecha":"2025-09-28","mod":"Revancha","sorteo":2583,"numeros":[5,8,16,27,30,44],"pozo":158000000},
+{"fecha":"2025-09-28","mod":"SiempreSale","sorteo":2583,"numeros":[7,13,19,25,35,40],"pozo":158000000}
+];
+
+// ---------- almacén local de mis jugadas ----------
+let misJugadas = [];
+try {
+  const raw = localStorage.getItem('misJugadas');
+  if (raw) misJugadas = JSON.parse(raw);
+} catch (e) {}
+
+function guardarJugada(jugada) {
+  misJugadas.push(jugada);
+  localStorage.setItem('misJugadas', JSON.stringify(misJugadas));
+}
+
+function listarJugadas() {
+  const lista = document.getElementById('lista');
+  lista.innerHTML = '';
+  misJugadas.forEach((j, i) => {
+    const li = document.createElement('li');
+    li.textContent = `Jugada ${i + 1}: Sorteo ${j.sorteo} - ${j.modalidad} - Números: ${j.numeros.join(' ')} - Aciertos: ${j.aciertos}`;
+    lista.appendChild(li);
+  });
+}
 
 function calcular() {
   const nro = Number(document.getElementById('sorteo').value);
   const mod = document.getElementById('mod').value;
-  const jugada = [1,2,3,4,5,6].map(i => Number(document.getElementById('j'+i).value));
-  const sorteo = datos.find(s => s.sorteo === nro && s.modalidad === mod);
+  const jugada = [1, 2, 3, 4, 5, 6].map(i => Number(document.getElementById('j' + i).value));
 
-  if (!sorteo) { 
-    document.getElementById('res').textContent = 'No encontré ese sorteo en la base.'; 
-    return; 
+  if (!nro || jugada.some(x => x < 0 || x > 45 || isNaN(x))) {
+    alert('Completá todos los campos (0-45).');
+    return;
+  }
+
+  const sorteo = datos.find(s => s.sorteo === nro && s.modalidad === mod);
+  if (!sorteo) {
+    alert('Ese sorteo todavía no está cargado en la base.');
+    return;
   }
 
   const aciertos = jugada.filter(n => sorteo.numeros.includes(n)).length;
@@ -55,9 +85,21 @@ function calcular() {
               aciertos === 4 ? '4 aciertos (Tercer premio)' :
               'Menos de 4 aciertos';
 
-  document.getElementById('res').textContent = 
+  document.getElementById('res').textContent =
     `Sorteo ${nro} – ${mod}: ${aciertos} aciertos → ${cat}`;
+
+  // guardamos la jugada
+  guardarJugada({
+    sorteo: nro,
+    modalidad: mod,
+    numeros: jugada,
+    aciertos: aciertos
+  });
+  listarJugadas();
 }
+
+// al cargar la página listamos lo que ya tenía
+listarJugadas();
 </script>
 </body>
 </html>
