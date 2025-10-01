@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Quini6 – Panel estadístico</title>
+<link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+<h1>Quini6 Santa Fe – Panel de estadísticas</h1>
+<nav>
+  <button onclick="location.href='estadisticas.html'">Ver estadísticas</button>
+  <button onclick="location.href='generador.html'">Generar jugadas</button>
+  <button onclick="location.href='carga.html'">Cargar nuevo sorteo</button>
+</nav>
+<p>Datos locales: <span id="total"></span> sorteos cargados.</p>
+
+<script>
+fetch('quini6_datos.json')
+  .then(r=>r.json())
+  .then(j=>document.getElementById('total').textContent=j.length);
+</script>
+</body>
+</html>
